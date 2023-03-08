@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
+use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -36,15 +37,8 @@ class HandleInertiaRequests extends Middleware
             // ],
 
             'auth.user' => fn () => $request->user()
-            ? $request->user()->only('id', 'name', 'email')
+            ? new UserResource($request->user())
             : null,
-            'auth.user.roles' => fn () => $request->user()
-            ? $request->user()->getRoleNames()
-            : null,
-            'auth.user.permissions' => fn () => $request->user()
-            ? $request->user()->getPermissionNames()
-            : null,
-
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
